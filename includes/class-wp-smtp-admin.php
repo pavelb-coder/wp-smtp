@@ -1,6 +1,6 @@
 <?php
 /**
- * Settings page: Settings → WP SMTP.
+ * Settings page: Settings → WP SMTP-KV.
  *
  * @package WP_SMTP
  */
@@ -54,8 +54,8 @@ class WP_SMTP_Admin {
 	 */
 	public function add_menu() {
 		add_options_page(
-			__( 'WP SMTP — настройки', 'wp-smtp' ),
-			'WP SMTP',
+			__( 'WP SMTP-KV — настройки', 'wp-smtp' ),
+			'WP SMTP-KV',
 			'manage_options',
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
@@ -97,7 +97,7 @@ class WP_SMTP_Admin {
 				$this->notice_key(),
 				array(
 					'type' => 'success',
-					'text' => __( 'Настройки WP SMTP сохранены.', 'wp-smtp' ),
+					'text' => __( 'Настройки WP SMTP-KV сохранены.', 'wp-smtp' ),
 				),
 				60
 			);

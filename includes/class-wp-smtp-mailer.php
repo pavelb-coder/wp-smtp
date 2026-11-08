@@ -135,9 +135,9 @@ class WP_SMTP_Mailer {
 		add_action( 'wp_mail_failed', $collector, 999 );
 
 		$host    = wp_parse_url( home_url(), PHP_URL_HOST );
-		$subject = sprintf( '[WP SMTP] Тестовое письмо%s', $host ? ' с ' . $host : '' );
+		$subject = sprintf( '[WP SMTP-KV] Тестовое письмо%s', $host ? ' с ' . $host : '' );
 		$body    = sprintf(
-			"Это тестовое письмо плагина WP SMTP.\n\nСервер: %s:%d (%s)\nВремя: %s\nСайт: %s\n\nЕсли письмо дошло — SMTP настроен верно.",
+			"Это тестовое письмо плагина WP SMTP-KV.\n\nСервер: %s:%d (%s)\nВремя: %s\nСайт: %s\n\nЕсли письмо дошло — SMTP настроен верно.",
 			$settings['host'],
 			(int) $settings['port'],
 			$settings['encryption'],

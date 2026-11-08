@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SemVer x.y.z helper for the WP SMTP plugin.
+SemVer x.y.z helper for the WP SMTP-KV plugin.
 
     python3 tools/version.py check          # verify all version strings match VERSION
     python3 tools/version.py show           # print the current version
@@ -160,7 +160,7 @@ def pack():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="WP SMTP x.y.z version helper")
+    parser = argparse.ArgumentParser(description="WP SMTP-KV x.y.z version helper")
     parser.add_argument("command", choices=("check", "show", "bump", "pack"))
     parser.add_argument("target", nargs="?", default="patch", help="for bump: x.y.z | major | minor | patch")
     args = parser.parse_args()

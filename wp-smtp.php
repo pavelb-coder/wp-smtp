@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name:       WP SMTP
+ * Plugin Name:       WP SMTP-KV
  * Plugin URI:        https://github.com/pavelb-coder/wp-smtp
  * Description:       Sends WordPress mail through an authenticated SMTP server. Settings page, encrypted password storage and a test-email tool.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            pavelb-coder
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'WP_SMTP_VERSION', '1.0.0' );
+define( 'WP_SMTP_VERSION', '1.0.1' );
 define( 'WP_SMTP_PLUGIN_FILE', __FILE__ );
 define( 'WP_SMTP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WP_SMTP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

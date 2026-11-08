@@ -1,9 +1,9 @@
-=== WP SMTP ===
+=== WP SMTP-KV ===
 Contributors: pavelb-coder
 Tags: smtp, mail, email, phpmailer, wp-mail
 Requires at least: 5.8
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -11,7 +11,7 @@ Send WordPress mail through an authenticated SMTP server. Simple settings page, 
 
 == Description ==
 
-WP SMTP configures the PHPMailer instance used by `wp_mail()` so that all WordPress mail goes through your SMTP server instead of the local PHP `mail()` function.
+WP SMTP-KV configures the PHPMailer instance used by `wp_mail()` so that all WordPress mail goes through your SMTP server instead of the local PHP `mail()` function.
 
 Features:
 
@@ -20,7 +20,7 @@ Features:
 * Custom `From` name and address with an option to force them for all messages.
 * Connection timeout and an optional SMTP debug log (goes to `error_log`).
 * "Send a test email" tool with a human-readable error message from PHPMailer.
-* Settings page under Settings -> WP SMTP, protected by `manage_options`, nonces, sanitisation and escaping.
+* Settings page under Settings -> WP SMTP-KV, protected by `manage_options`, nonces, sanitisation and escaping.
 * Clean uninstall: settings are removed when the plugin is deleted.
 
 Requires OpenSSL for password encryption. If OpenSSL is unavailable the password is stored as plain text in the options table — do not use such a server for production mail.
@@ -28,8 +28,8 @@ Requires OpenSSL for password encryption. If OpenSSL is unavailable the password
 == Installation ==
 
 1. Upload the `wp-smtp` folder to `/wp-content/plugins/`, or install the ZIP via Plugins -> Add New.
-2. Activate **WP SMTP**.
-3. Open Settings -> WP SMTP, fill in the host, port, encryption, login and password.
+2. Activate **WP SMTP-KV**.
+3. Open Settings -> WP SMTP-KV, fill in the host, port, encryption, login and password.
 4. Tick "Use SMTP", click **Save settings**, then send a test email.
 5. Only enable debug mode while troubleshooting.
 
@@ -57,9 +57,12 @@ Yes, potentially: only one plugin should configure PHPMailer's SMTP transport at
 
 = What version format is used? =
 
-SemVer `x.y.z` (MAJOR.MINOR.PATCH), for example `1.0.0`. The same version is kept in the plugin header, `WP_SMTP_VERSION`, `Stable tag` and the release archive name `wp-smtp-1.0.0.zip`. A helper (`tools/version.py`) validates and bumps it.
+SemVer `x.y.z` (MAJOR.MINOR.PATCH), for example `1.0.1`. The same version is kept in the plugin header, `WP_SMTP_VERSION`, `Stable tag` and the release archive name `wp-smtp-<x.y.z>.zip`. A helper (`tools/version.py`) validates and bumps it.
 
 == Changelog ==
+
+= 1.0.1 =
+* Renamed the plugin to WP SMTP-KV (plugin header, admin page, test email, documentation). Internal identifiers, settings key, text domain and plugin folder are unchanged, so existing installations keep working.
 
 = 1.0.0 =
 * Initial release: settings page, encrypted password, SMTP AUTH, From override, debug logging, test email, uninstall cleanup.
