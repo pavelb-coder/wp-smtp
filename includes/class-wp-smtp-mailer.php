@@ -116,13 +116,13 @@ class WP_SMTP_Mailer {
 		$to = sanitize_email( $to );
 
 		if ( ! is_email( $to ) ) {
-			return new WP_Error( 'wp_smtp_invalid_email', __( 'Укажите корректный e-mail получателя.', 'wp-smtp' ) );
+			return new WP_Error( 'wp_smtp_invalid_email', __( 'Укажите корректный e-mail получателя.', 'wp-smtp-kv' ) );
 		}
 
 		$settings = $this->options->get_all();
 
 		if ( empty( $settings['host'] ) ) {
-			return new WP_Error( 'wp_smtp_no_host', __( 'Сначала сохраните SMTP-хост в настройках.', 'wp-smtp' ) );
+			return new WP_Error( 'wp_smtp_no_host', __( 'Сначала сохраните SMTP-хост в настройках.', 'wp-smtp-kv' ) );
 		}
 
 		$this->testing = true;
@@ -155,7 +155,7 @@ class WP_SMTP_Mailer {
 		}
 
 		if ( ! $sent ) {
-			return new WP_Error( 'wp_smtp_send_failed', __( 'wp_mail() вернул false. Включите отладку и проверьте логи PHP.', 'wp-smtp' ) );
+			return new WP_Error( 'wp_smtp_send_failed', __( 'wp_mail() вернул false. Включите отладку и проверьте логи PHP.', 'wp-smtp-kv' ) );
 		}
 
 		return true;

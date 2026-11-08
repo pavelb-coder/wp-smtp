@@ -12,15 +12,39 @@
 - Таймаут соединения и отладочный лог диалога с сервером в `error_log`.
 - Кнопка «Отправить тест»: работает даже когда SMTP выключен, показывает текст ошибки PHPMailer.
 - Страница **Настройки → WP SMTP-KV**, проверка `manage_options`, nonce, санитизация и экранирование, удаление настроек при удалении плагина.
+- Собственная «личность» для обновлений: уникальная папка `wp-smtp-kv`, text domain `wp-smtp-kv` и заголовок `Update URI` — WordPress не перепутает плагин с `wp-smtp` от SolidWP.
 
 ## Установка
 
-1. Скопируйте папку `wp-smtp` в `wp-content/plugins/` (или установите архив `wp-smtp-1.0.1.zip` через «Плагины → Добавить новый»).
+1. Скопируйте папку `wp-smtp-kv` в `wp-content/plugins/` (или установите архив `wp-smtp-kv-1.1.0.zip` через «Плагины → Добавить новый»). Не называйте папку `wp-smtp` — этот слуг занят другим плагином в каталоге WordPress.org.
 2. Активируйте **WP SMTP-KV**.
 3. Откройте «Настройки → WP SMTP-KV», заполните хост, порт, шифрование, логин и пароль.
 4. Поставьте галочку «Использовать SMTP», сохраните и отправьте тестовое письмо.
 
 Требования: WordPress 5.8+, PHP 7.4+, расширение OpenSSL. Без OpenSSL пароль сохраняется в открытом виде — такой сервер не стоит использовать для боевой почты.
+
+## Отдельный плагин: почему WordPress предлагал обновление от SolidWP
+
+В каталоге WordPress.org слуг **`wp-smtp`** занят плагином «Solid Mail – SMTP email and logging made by SolidWP» (автор SolidWP, версия 3.0.0). WordPress проверяет обновления **по слугу папки**, поэтому плагин в папке `wp-smtp` получал чужое уведомление «доступна версия 3.0.0» — а установка этого обновления просто перезаписала бы наши файлы плагином SolidWP.
+
+Начиная с `1.1.0` у плагина собственная идентичность:
+
+| Механизм | Что делает |
+| --- | --- |
+| Папка `wp-smtp-kv/` в архиве | уникальный слуг, которого нет в каталоге WordPress.org |
+| `Update URI: https://github.com/pavelb-coder/wp-smtp` | начиная с WP 5.8 API wordpress.org игнорирует плагин с таким заголовком ([dev note](https://make.wordpress.org/core/2021/06/29/introducing-update-uri-plugin-header-in-wordpress-5-8/)) |
+| `Text Domain: wp-smtp-kv`, страница `?page=wp-smtp-kv` | никаких пересечений с чужим плагином в админке и переводах |
+| `WP_SMTP_Updates` → фильтр `site_transient_update_plugins` | убирает уже закэшированные записи из `.org` для наших basename, но не трогает обновления других плагинов и будущего GitHub-апдейтера |
+
+Ключ настроек `wp_smtp_settings`, классы `WP_SMTP_*` и хуки не менялись, поэтому настройки сохраняются при обновлении.
+
+**Если уведомление уже висит на сайте:**
+
+```bash
+wp transient delete update_plugins --network   # сбросить кэш проверки обновлений (WP-CLI)
+```
+
+Затем переименуйте папку плагина в `wp-smtp-kv` (деактивируйте → переименуйте → активируйте). Не используйте кнопку «Удалить»: `uninstall.php` сотрёт настройки. Если вы клонировали репозиторий напрямую, обязательно переименуйте папку `wp-smtp` → `wp-smtp-kv` — заголовок `Update URI` защитит и этот вариант, но уникальный слуг надёжнее.
 
 ## Параметры популярных провайдеров
 
@@ -40,12 +64,14 @@ wp-smtp.php                              заголовок плагина, ве
 includes/class-wp-smtp-options.php      настройки, санитизация, шифрование пароля
 includes/class-wp-smtp-mailer.php       phpmailer_init, фильтры From, тестовое письмо
 includes/class-wp-smtp-admin.php        страница настроек и обработка форм
+includes/class-wp-smtp-updates.php      защита от чужих обновлений WordPress.org
 uninstall.php                           очистка при удалении
 readme.txt                              описание для каталога плагинов WordPress
 VERSION                                 единый источник версии для инструментов
 tools/version.py                        check / show / bump / pack
 tools/check.sh                          локальная проверка перед пушем
 tests/test-options.php                  smoke-тест настроек без WordPress
+tests/test-updates.php                  smoke-тест фильтра обновлений
 .distignore                             что НЕ попадает в релизный ZIP
 .gitignore                              локальные артефакты
 ```
@@ -62,18 +88,18 @@ WordPress требует литерал версии в заголовке пл�
 
 | Где | Что |
 | --- | --- |
-| `VERSION` | `1.0.1` — читают инструменты |
-| `wp-smtp.php` | `Version: 1.0.1` и `WP_SMTP_VERSION` |
-| `readme.txt` | `Stable tag: 1.0.1` и раздел `= 1.0.1 =` в Changelog |
-| архив | `wp-smtp-1.0.1.zip` в корне рабочей папки |
+| `VERSION` | `1.1.0` — читают инструменты |
+| `wp-smtp.php` | `Version: 1.1.0` и `WP_SMTP_VERSION` |
+| `readme.txt` | `Stable tag: 1.1.0` и раздел `= 1.1.0 =` в Changelog |
+| архив | `wp-smtp-kv-1.1.0.zip` в корне рабочей папки |
 
 Команды (из каталога плагина):
 
 ```bash
 python3 tools/version.py check          # все четыре места совпадают и формат x.y.z?
 python3 tools/version.py show           # текущая версия
-python3 tools/version.py bump patch     # 1.0.1 -> 1.0.2 (или minor / major / 2.1.0)
-python3 tools/version.py pack           # собрать ../wp-smtp-1.0.1.zip
+python3 tools/version.py bump patch     # 1.1.0 -> 1.1.1 (или minor / major / 2.1.0)
+python3 tools/version.py pack           # собрать ../wp-smtp-kv-1.1.0.zip
 ```
 
 `bump` сам обновляет заголовок, константу, `Stable tag`, добавляет заготовку в Changelog и перезаписывает `VERSION`. `pack` сначала запускает `check` и не соберёт архив при расхождении версий; в архив не попадают `.git`, `tools/`, `tests/`, `VERSION`, логи и временные файлы (см. `.distignore`).
@@ -81,10 +107,10 @@ python3 tools/version.py pack           # собрать ../wp-smtp-1.0.1.zip
 ## Проверка перед отправкой
 
 ```bash
-bash tools/check.sh     # version.py check + php -l + smoke-тест + git status
+bash tools/check.sh     # version.py check + php -l + 2 smoke-теста + git status
 ```
 
-Скрипт не требует установленного WordPress: `tests/test-options.php` подменяет несколько функций WP и проверяет шифрование пароля, значения по умолчанию и очистку опций. Архив собирается отдельно: `python3 tools/version.py pack`.
+Скрипт не требует установленного WordPress: `tests/test-options.php` проверяет шифрование пароля и настройки, `tests/test-updates.php` — что чужое обновление из каталога отбрасывается, а собственное (будущего GitHub-апдейтера) остаётся. Архив собирается отдельно: `python3 tools/version.py pack`.
 
 ## Как это работает
 
@@ -109,5 +135,6 @@ add_action( 'phpmailer_init', array( $mailer, 'configure_phpmailer' ), 999 );
 | `SMTP Error: Could not authenticate` | Логин (часто нужен полный e-mail), app password, SMTP AUTH |
 | `Certificate mismatch` | Домен в хосте и сертификат, не отключайте проверку TLS без причины |
 | Письмо уходит, но не доходит | `From`, SPF/DKIM/DMARC домена, папка «Спам» |
+| WordPress предлагает обновление от SolidWP | Папка называется `wp-smtp`, нет `Update URI` или закэширован transient — см. раздел ниже |
 
 Лицензия: GPL-2.0-or-later.

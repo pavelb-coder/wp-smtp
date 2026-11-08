@@ -5,7 +5,7 @@ SemVer x.y.z helper for the WP SMTP-KV plugin.
     python3 tools/version.py check          # verify all version strings match VERSION
     python3 tools/version.py show           # print the current version
     python3 tools/version.py bump patch     # or: minor, major, 2.1.0
-    python3 tools/version.py pack           # build ../wp-smtp-<version>.zip
+    python3 tools/version.py pack           # build ../wp-smtp-kv-<version>.zip
 
 The version is stored in four places (WordPress requires literals in the
 plugin header and in readme.txt, so a single dynamic source is impossible):
@@ -13,7 +13,7 @@ plugin header and in readme.txt, so a single dynamic source is impossible):
     VERSION                 -> single source of truth for the tooling
     wp-smtp.php             -> "Version:" header and WP_SMTP_VERSION
     readme.txt              -> "Stable tag:" and "== Changelog ==" section
-    wp-smtp-<version>.zip   -> release archive name
+    wp-smtp-kv-<version>.zip -> release archive name (folder: wp-smtp-kv/)
 """
 
 import argparse
@@ -26,6 +26,10 @@ import zipfile
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VERSION_FILE = os.path.join(ROOT, "VERSION")
 SEMVER = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
+
+# Unique install folder: the slug `wp-smtp` belongs to the SolidWP plugin on
+# WordPress.org and must never be used by this plugin.
+PLUGIN_SLUG = "wp-smtp-kv"
 
 # (relative path, regex with ONE capture group for the version, replacement template)
 PLACES = [
@@ -85,6 +89,29 @@ def check():
         print("FAIL  %-14s no changelog section = %s =" % ("readme.txt", version))
         ok = False
 
+    header = read("wp-smtp.php")
+
+    update_uri = re.search(r"(?m)^ \* Update URI:\s+(\S+)\s*$", header)
+    uri = update_uri.group(1) if update_uri else ""
+    if uri and "wordpress.org" not in uri and not uri.startswith("w.org/"):
+        print("OK    %-14s Update URI -> %s" % ("wp-smtp.php", uri))
+    else:
+        print("FAIL  %-14s missing / colliding Update URI" % "wp-smtp.php")
+        ok = False
+
+    domain = re.search(r"(?m)^ \* Text Domain:\s+(\S+)\s*$", header)
+    if domain and domain.group(1) == PLUGIN_SLUG:
+        print("OK    %-14s Text Domain %s" % ("wp-smtp.php", PLUGIN_SLUG))
+    else:
+        print("FAIL  %-14s Text Domain must be %s" % ("wp-smtp.php", PLUGIN_SLUG))
+        ok = False
+
+    if PLUGIN_SLUG and PLUGIN_SLUG != "wp-smtp":
+        print("OK    %-14s folder %s (unique, no .org collision)" % ("pack()", PLUGIN_SLUG))
+    else:
+        print("FAIL  %-14s archive folder collides with .org slug wp-smtp" % "pack()")
+        ok = False
+
     print("Version: %s (%s)" % (version, "consistent" if ok else "INCONSISTENT"))
     return 0 if ok else 1
 
@@ -140,7 +167,7 @@ def pack():
     if check():
         fail("fix version mismatches before packing")
     version = read_version()
-    archive = os.path.join(os.path.dirname(ROOT), "wp-smtp-%s.zip" % version)
+    archive = os.path.join(os.path.dirname(ROOT), "%s-%s.zip" % (PLUGIN_SLUG, version))
 
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as z:
         for base, dirs, files in os.walk(ROOT):
@@ -150,7 +177,7 @@ def pack():
                 rel = os.path.relpath(full, ROOT)
                 if ignored(rel):
                     continue
-                z.write(full, os.path.join("wp-smtp", rel))
+                z.write(full, os.path.join(PLUGIN_SLUG, rel))
 
     print("Built %s" % archive)
     with zipfile.ZipFile(archive) as z:

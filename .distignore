@@ -1,4 +1,5 @@
-# Files excluded from the distributable wp-smtp-x.y.z.zip
+# Files excluded from the distributable wp-smtp-kv-x.y.z.zip
+# The archive contains a single wp-smtp-kv/ folder — a slug WordPress.org cannot confuse.
 .git
 .gitignore
 .distignore

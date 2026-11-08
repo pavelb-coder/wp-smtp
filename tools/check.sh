@@ -13,6 +13,9 @@ find . -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l
 echo "== smoke-тест настроек =="
 php tests/test-options.php
 
+echo "== smoke-тест защиты от обновлений WordPress.org =="
+php tests/test-updates.php
+
 echo "== git =="
 git status --short
 
