@@ -1,0 +1,13 @@
+# Local dev artefacts — never commit secrets or WordPress itself
+wp-config.php
+.env
+.env.*
+*.log
+.DS_Store
+Thumbs.db
+/vendor/
+/node_modules/
+/build/
+/dist/
+*.zip
+/tools/__pycache__/

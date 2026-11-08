@@ -1,0 +1,13 @@
+# Files excluded from the distributable wp-smtp-x.y.z.zip
+.git
+.gitignore
+.distignore
+.arena
+tools
+tests
+VERSION
+*.log
+*.zip
+node_modules
+vendor
+.DS_Store
