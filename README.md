@@ -44,6 +44,8 @@ uninstall.php                           очистка при удалении
 readme.txt                              описание для каталога плагинов WordPress
 VERSION                                 единый источник версии для инструментов
 tools/version.py                        check / show / bump / pack
+tools/check.sh                          локальная проверка перед пушем
+tests/test-options.php                  smoke-тест настроек без WordPress
 .distignore                             что НЕ попадает в релизный ZIP
 .gitignore                              локальные артефакты
 ```
@@ -75,6 +77,14 @@ python3 tools/version.py pack           # собрать ../wp-smtp-1.0.0.zip
 ```
 
 `bump` сам обновляет заголовок, константу, `Stable tag`, добавляет заготовку в Changelog и перезаписывает `VERSION`. `pack` сначала запускает `check` и не соберёт архив при расхождении версий; в архив не попадают `.git`, `tools/`, `tests/`, `VERSION`, логи и временные файлы (см. `.distignore`).
+
+## Проверка перед отправкой
+
+```bash
+bash tools/check.sh     # version.py check + php -l + smoke-тест + git status
+```
+
+Скрипт не требует установленного WordPress: `tests/test-options.php` подменяет несколько функций WP и проверяет шифрование пароля, значения по умолчанию и очистку опций. Архив собирается отдельно: `python3 tools/version.py pack`.
 
 ## Как это работает
 
